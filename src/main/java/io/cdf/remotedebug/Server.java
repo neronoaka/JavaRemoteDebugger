@@ -63,7 +63,7 @@ public class Server extends WebSocketServer {
 				arg0.send("MSGStarting:" + jarfile + '/' + clsname);
 				System.out.println("Running Target App...");
 				LoadLibrary(WorkingPath + "files", target[0], arg0);
-				ps.println("\n");
+				ps.println("=====TARGET APP IS RUNNING ON REMOTE=====");
 				Object obj = Invoke(jarfile, clsname + ".App", "run",
 						new Class<?>[] { String[].class, PrintStream.class }, new Object[] { arguments, ps });
 				System.out.println("Target App Exit.");
