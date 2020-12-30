@@ -1,4 +1,4 @@
-package io.cdf.remotedebug;
+package tech.cdf.remotedebug;
 
 import java.net.URI;
 
@@ -28,9 +28,9 @@ public class Client extends WebSocketClient {
 		if (arg0.startsWith("RUN"))
 			System.out.print(actually);
 		if (arg0.startsWith("MSG"))
-			System.out.println("[REMOTE]" + actually);
+			System.out.println("[REMOTE][INFO]" + actually);
 		else if (arg0.startsWith("ERR"))
-			System.out.println("[EXCEPTION]" + actually + "\n");
+			System.out.println("[REMOTE][ERR]" + actually + "\n");
 		else if (arg0.startsWith("END"))
 			this.close();
 	}

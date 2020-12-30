@@ -1,4 +1,4 @@
-package io.cdf.remotedebug;
+package tech.cdf.remotedebug;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

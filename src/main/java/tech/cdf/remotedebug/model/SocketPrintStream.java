@@ -1,4 +1,4 @@
-package io.cdf.remotedebug;
+package tech.cdf.remotedebug.model;
 
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
@@ -9,10 +9,12 @@ import org.java_websocket.WebSocket;
 
 public class SocketPrintStream extends PrintStream {
 	private WebSocket ws;
+	private String mode;
 
-	public SocketPrintStream(WebSocket arg0) {
+	public SocketPrintStream(WebSocket arg0, String arg1) {
 		super(System.out);
 		ws = arg0;
+		this.mode = arg1;
 	}
 
 	@Override
@@ -134,7 +136,7 @@ public class SocketPrintStream extends PrintStream {
 		if (s.length() > 0) {
 			for (char ch : s.toCharArray())
 				if (ch == '\n')
-					send += "\n[INVOKE]" + sdf.format(new Date());
+					send += "\n[REMOTE][" + mode + "]" + sdf.format(new Date());
 				else
 					send += ch;
 		}
