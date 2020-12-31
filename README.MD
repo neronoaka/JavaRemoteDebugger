@@ -95,4 +95,5 @@ task RemoteDebug(type: JavaExec,dependsOn: ":build") {
 ## 终止服务
 如需终止服务，可在服务器的目录/var/remotedebug/下创建一个空文件stop.flag用于完全终止服务，服务完全终止后该文件也会被删除，若在不终止服务的情况下终止当前运行的程序，可创建空文件stoprun.flag，运行终止后该文件会被删除，但服务仍然继续运行。
 
+
 >作者：PlaceChen &lt;cwslive@live.com&gt;
