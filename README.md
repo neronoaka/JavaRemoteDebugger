@@ -1,5 +1,9 @@
 # JavaRemoteDebugger使用说明
 
+## 系统要求
++ Windows Java 推荐版本:java version "1.8.0_181"
++ Linux Java 推荐版本:openjdk version "1.8.0_275"
+
 ## 服务器
 ### 选项
 
