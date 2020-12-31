@@ -1,11 +1,7 @@
 package tech.cdf.remotedebug;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
@@ -21,6 +17,7 @@ import org.java_websocket.server.WebSocketServer;
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
 import tech.cdf.remotedebug.model.RunTarget;
+import tech.cdf.remotedebug.model.RunTarget.RunMode;
 import tech.cdf.remotedebug.model.SocketPrintStream;
 
 public class Server extends WebSocketServer {
@@ -122,38 +119,9 @@ public class Server extends WebSocketServer {
 		String cmd = "/usr/bin/java -Xdebug -Xnoagent -Djava.compiler=NONE "
 				+ "-Xrunjdwp:transport=dt_socket,address=4520,server=y,suspend=y -jar ";
 		cmd += mainjar + " " + args;
-		final Process p = Runtime.getRuntime().exec(cmd);
-		try {
-			final SocketPrintStream ps = new SocketPrintStream(arg0, "DEBUG");
-			arg0.send("MSGDebug command line:\n" + cmd);
-			ps.println("=====TARGET APP IS DEBUGGING ON REMOTE=====");
-			final InputStream stdin = p.getInputStream();
-			new Thread() {
-				public void run() {
-					BufferedReader brstd = new BufferedReader(new InputStreamReader(stdin));
-					try {
-						while (p.isAlive())
-							ps.print((char) brstd.read());
-					} catch (Exception e) {
-						arg0.send("ERR" + App.GetTrace(e));
-					} finally {
-						try {
-							stdin.close();
-						} catch (Exception e) {
-						}
-					}
-				}
-			}.start();
-			p.waitFor();
-			p.destroy();
-		} catch (Exception e) {
-			try {
-				p.getErrorStream().close();
-				p.getInputStream().close();
-				p.getOutputStream().close();
-			} catch (Exception ee) {
-			}
-		}
+		arg0.send("MSGDebug command line:\n" + cmd);
+		InvokeThread it = new InvokeThread(arg0, cmd, RunMode.DEBUG);
+		it.Invoke();
 		System.out.println("Target App Exit.");
 		arg0.send("RUN\n\n");
 		arg0.send("MSGDebug target exit.");
