@@ -2,11 +2,8 @@ package tech.cdf.remotedebug;
 
 public class RunTarget {
 	public String JarFile;
-
 	public String Args;
-
 	public String Data;
-
 	public RunMode Runmode;
 
 	public RunTarget(String jarfile, String args, String data, RunMode rm) {
@@ -18,7 +15,6 @@ public class RunTarget {
 
 	public enum RunMode {
 		RUN(0), DEBUG(1), EXCEPTION(2);
-
 		private int index;
 
 		RunMode(int arg0) {

@@ -10,11 +10,8 @@ import org.java_websocket.enums.ReadyState;
 
 public class App {
 	private static PrintStream ps = System.out;
-
 	private static Client wsc;
-
 	private static Server wss;
-
 	public static Gson gson;
 
 	public static void main(String[] args) throws Exception {
@@ -32,14 +29,12 @@ public class App {
 					} catch (Exception exception) {
 					}
 				}
-			} else if (args[0].startsWith("-server") && args.length == 3) {
+			} else if (args[0].startsWith("-server") && args.length == 3)
 				RunServer(args);
-			} else {
+			else
 				Help();
-			}
-		} else {
+		} else
 			Help();
-		}
 		ps.println("\033[0mProcess Exit.");
 	}
 
@@ -49,7 +44,7 @@ public class App {
 		ps.print("Connecting");
 		while (wsc.getReadyState() == ReadyState.NOT_YET_CONNECTED) {
 			ps.print('-');
-			Thread.sleep(500L);
+			Thread.sleep(500);
 		}
 		if (wsc.getReadyState() == ReadyState.OPEN) {
 			ps.println("\n\033[7;32mConnected to Server.\033[0m");
@@ -62,9 +57,8 @@ public class App {
 					params = String.valueOf(params) + args[i] + " ";
 			RunTarget rt = new RunTarget(jarfile, params.trim(), zipdata, RunTarget.RunMode.valueOf(args[4]));
 			wsc.send(gson.toJson(rt));
-			do {
-
-			} while (wsc.getReadyState() != ReadyState.CLOSED);
+			while (wsc.getReadyState() != ReadyState.CLOSED)
+				;
 			wsc.close();
 		}
 	}
@@ -80,16 +74,16 @@ public class App {
 			wss.start();
 			File flag = new File("/var/remotedebug/stop.flag");
 			while (!flag.exists())
-				Thread.sleep(100L);
+				Thread.sleep(100);
 			flag.delete();
 			wss.stop();
-		} catch (Exception e) {
+		} catch (Exception ex) {
 			ps.println("Exception While Starting Server!");
-			e.printStackTrace();
+			ex.printStackTrace();
 		} finally {
 			try {
 				wss.stop();
-			} catch (Exception exception) {
+			} catch (Exception e) {
 			}
 		}
 	}

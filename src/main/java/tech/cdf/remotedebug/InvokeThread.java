@@ -10,11 +10,8 @@ import org.java_websocket.WebSocket;
 
 public class InvokeThread {
 	private WebSocket ws;
-
 	private String cmd;
-
 	private RunTarget.RunMode rm;
-
 	private String err;
 
 	public InvokeThread(WebSocket arg0, String cmd, RunTarget.RunMode rm) throws Exception {
@@ -25,7 +22,7 @@ public class InvokeThread {
 	}
 
 	private void AppendErr(char ch) {
-		this.err = String.valueOf(this.err) + String.valueOf(ch);
+		this.err += String.valueOf(ch);
 	}
 
 	public void Invoke() throws Exception {
@@ -33,7 +30,7 @@ public class InvokeThread {
 		final InputStream stdin = p.getInputStream();
 		final InputStream errin = p.getErrorStream();
 		sendstr("\033[7;32m=====TARGET APP IS EXECUTING ON REMOTE=====\033[0m\n");
-		(new Thread() {
+		new Thread() {
 			public void run() {
 				try {
 					File flag = new File("/var/remotedebug/stoprun.flag");
@@ -41,15 +38,15 @@ public class InvokeThread {
 						if (flag.exists()) {
 							p.destroy();
 							flag.delete();
-							InvokeThread.this.ws.send("RUN\n");
-							InvokeThread.this.ws.send("ERRThe process was forced to terminate by the server.");
+							ws.send("RUN\n");
+							ws.send("ERRThe process was forced to terminate by the server.");
 						}
-						Thread.sleep(100L);
+						Thread.sleep(100);
 					}
-				} catch (Exception exception) {
+				} catch (Exception e) {
 				}
 			}
-		}).start();
+		}.start();
 		Thread StdThread = new Thread() {
 			public void run() {
 				BufferedReader brstd = new BufferedReader(new InputStreamReader(stdin));
@@ -57,9 +54,8 @@ public class InvokeThread {
 					int i = -1;
 					do {
 						i = brstd.read();
-						if (i == -1)
-							continue;
-						InvokeThread.this.sendstr(String.valueOf((char) i));
+						if (i != -1)
+							sendstr(String.valueOf((char) i));
 					} while (i != -1);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -79,9 +75,8 @@ public class InvokeThread {
 					int i = -1;
 					do {
 						i = brerr.read();
-						if (i == -1)
-							continue;
-						InvokeThread.this.AppendErr((char) i);
+						if (i != -1)
+							AppendErr((char) i);
 					} while (i != -1);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -97,14 +92,13 @@ public class InvokeThread {
 		StdThread.start();
 		ErrThread.start();
 		p.waitFor();
-		do {
-
-		} while (StdThread.isAlive() || ErrThread.isAlive());
+		while (StdThread.isAlive() || ErrThread.isAlive())
+			;
 		System.out.println("Target App Exit.");
-		this.ws.send("RUN\n\n");
-		this.ws.send("MSGTarget app exit,exit value=" + p.exitValue());
+		ws.send("RUN\n\n");
+		ws.send("MSGTarget app exit,exit value=" + p.exitValue());
 		sendstr(RunTarget.RunMode.EXCEPTION, "\033[7;31m=====TARGET APP RETURNED ERROR MESSAGE=====\033[0m" + this.err);
-		this.ws.send("RUN\n");
+		ws.send("RUN\n");
 		p.destroy();
 	}
 
@@ -112,20 +106,13 @@ public class InvokeThread {
 		SimpleDateFormat sdf = new SimpleDateFormat("[MM-dd hh:mm:ss]");
 		String send = "RUN";
 		if (s.length() > 0) {
-			byte b;
-			int i;
-			char[] arrayOfChar;
-			for (i = (arrayOfChar = s.toCharArray()).length, b = 0; b < i;) {
-				char ch = arrayOfChar[b];
-				if (ch == '\n') {
-					send = String.valueOf(send) + "\n[REMOTE][" + m.name() + "]" + sdf.format(new Date());
-				} else {
-					send = String.valueOf(send) + ch;
-				}
-				b++;
-			}
+			for (char ch : s.toCharArray())
+				if (ch == '\n')
+					send += "\n[REMOTE][" + m.name() + "]" + sdf.format(new Date());
+				else
+					send += ch;
+			ws.send(send);
 		}
-		this.ws.send(send);
 	}
 
 	private void sendstr(String s) {

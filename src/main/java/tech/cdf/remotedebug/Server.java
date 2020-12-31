@@ -63,19 +63,11 @@ public class Server extends WebSocketServer {
 		File temp = new File("/var/remotedebug/temp");
 		if (!temp.exists())
 			temp.mkdir();
-		if (!appdir.exists()) {
+		if (!appdir.exists())
 			appdir.mkdir();
-		} else {
-			byte b;
-			int i;
-			String[] arrayOfString;
-			for (i = (arrayOfString = appdir.list()).length, b = 0; b < i;) {
-				String child = arrayOfString[b];
-				File f = new File(child);
-				f.delete();
-				b++;
-			}
-		}
+		else
+			for (String child : appdir.list())
+				new File(child).delete();
 	}
 
 	private void UnZIP(byte[] zipdata) throws Exception {

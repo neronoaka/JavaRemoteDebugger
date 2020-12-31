@@ -15,19 +15,13 @@ public class Zip {
 	public static byte[] ZipFiles(String[] files) throws Exception {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ZipOutputStream out = new ZipOutputStream(baos);
-		byte b;
-		int i;
-		String[] arrayOfString;
-		for (i = (arrayOfString = files).length, b = 0; b < i;) {
-			String f = arrayOfString[b];
+		for (String f : files)
 			Compress(new File(f), out);
-			b++;
-		}
 		System.out.println("[ZIP]Compress successful.");
 		try {
 			if (out != null)
 				out.close();
-		} catch (Exception exception) {
+		} catch (Exception e) {
 		}
 		return baos.toByteArray();
 	}
