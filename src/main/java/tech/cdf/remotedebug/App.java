@@ -17,7 +17,7 @@ public class App {
 	public static void main(String[] args) throws Exception {
 		gson = new Gson();
 		if (args.length > 0) {
-			if (args[0].startsWith("-remoterun") && args.length == 6) {
+			if (args[0].startsWith("-remoterun") && args.length >= 4) {
 				try {
 					RunClient(args);
 				} catch (Exception e) {
